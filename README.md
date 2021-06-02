@@ -19,4 +19,4 @@ The docker ps command only shows running containers by default. To see all conta
 
 $ docker ps -a
 
-[](https://www.saagie.com/wp-content/uploads/2019/07/2-1024x251.png)
+![](https://www.saagie.com/wp-content/uploads/2019/07/2-1024x251.png)
