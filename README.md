@@ -32,7 +32,9 @@ docker stop <eerste letters IMAGE ID> # of id
 
 ![](https://www.saagie.com/wp-content/uploads/2019/07/2-1024x251.png)
 
-DAN. Niet verder in PWD omdat het je gegevens bloot legt
+## local Docker
+
+Niet verder in PWD omdat het je gegevens bloot legt
 
 dus een nieuw project!
 
@@ -89,59 +91,90 @@ docker build -t work-it:latest .
 # --tag , -t		Name and optionally a tag in the 'name:tag' format
 ```
 
+```
 docker ps
 docker run -d -p 3000:3000 docker-workshop
-// detached is still running, whether you like it or not;)
+# detached is still running, whether you like it or not;)
 docker logs 4e9
 docker ps
+```
 
+```
 docker stop abc
-
 docker ps -a
+```
 
+full remove:
+
+```
+full remove:
 docker stop abc && docker rm $_
 
-bash: `_$`
-Outputs the last field from the last command executed, useful to get something to pass onwards to another command
+# bash: `_$`
+# Outputs the last field from the last command executed, useful to get something to pass onwards to another command
+```
 
-open Docker Desktop
+## open Docker Desktop
 
 voila!
 
-<!-- docker inspect  -->
 
-<!-- docker pushen -->
+## Docker Push
 
+```
 docker images
 docker image rm
 
 docker tag docker-workshop rubenwerdmuller/workshop
+```
 
-// Dat is mijn username, maar ook mijn toegang
-// docker login
-// docker login -u your_dockerhub_username
-// als het mis gaat kun je even uitloggen natuurlijk
-// docker logout
+Dat is mijn username, maar ook mijn toegang
 
+```
+docker login
+docker login -u your_dockerhub_username
+```
+
+Als het mis gaat kun je even uitloggen natuurlijk
+
+```
+docker logout
+```
+
+en push!
+
+```
 docker push rubenwerdmuller/workshop
+```
 
+Alles leeg halen, want onze apps zijn groot!
+
+```
 docker system prune -a
+```
 
+nog een keer dan:
+
+```
 docker pull rubenwerdmuller/workshop
+```
 
 
 
+## Express API Generator
 
-
-
-
-<!-- Express API Generator -->
+```
 npx express-generator --no-view api
-// maakt een mapje /api met een Express starter 
+# maakt een mapje /api met een Express starter 
+```
 
+```
 var port = normalizePort(process.env.PORT || '3001');
-// aanpassen port in bin/wwww
+# aanpassen port in bin/wwww
+```
 
+```
 cd api
 npm i
 open http://localhost:3001/
+```
