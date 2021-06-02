@@ -30,7 +30,7 @@ docker stop <eerste letters IMAGE ID> # of id
 <!-- // run your image as container: -->
 <!-- docker run -dit hello-world -->
 
-![](https://www.saagie.com/wp-content/uploads/2019/07/2-1024x251.png)
+![](https://miro.medium.com/max/3600/0*CP98BIIBgMG2K3u5.png)
 
 ## local Docker
 
