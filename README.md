@@ -1,41 +1,54 @@
 # docker-workshop
 
+## Prerequisites
 - Create an account with [DockerHub](https://hub.docker.com/)
 - Open [PWD](https://labs.play-with-docker.com/) Platform on your browser
 - Download Docker Desktop
 
+Run ( en pull als hij niks kan vinden):
+
+```
 docker run hello-world
+```
 
+kiek maar:
+```
 docker images
+docker ps # hello world stopt zichzelf weer.. :)
+docker ps -a
+```
 
-docker inspect eerste letters IMAGE ID
-of
-docker inspect hello
+inspect de image:
+```
+docker inspect <eerste letters IMAGE ID> # of id
+```
 
-// docker run -d -p 80:80 nginx
+```
+docker stop <eerste letters IMAGE ID> # of id
+```
 
-// run your image as container:
-docker run -dit hello-world
-
-The docker ps command only shows running containers by default. To see all containers, use the -a (or --all) flag:
-
-$ docker ps -a
+<!-- // run your image as container: -->
+<!-- docker run -dit hello-world -->
 
 ![](https://www.saagie.com/wp-content/uploads/2019/07/2-1024x251.png)
 
-DAN, niet in PWD omdat het je gegevens bloot legt
+DAN. Niet verder in PWD omdat het je gegevens bloot legt
 
-dus een nieuw project:
+dus een nieuw project!
 
+```
 npx create-next-app --use-npm
-cd naam (ik heb docker-workshop)
+docker-workshop
+cd docker-workshop
+```
 
-docker login
-
-> Gaan we de docker file maken
+We gaan een docker file maken
 
 Dockerfile (In GO language die ze intern bij Google gebruiken)
 
+touch Dockerfile
+
+```
 # This image includes Node.js and npm. Each Dockerfile must begin with a FROM instruction.
 FROM node:16-alpine
 
@@ -58,19 +71,23 @@ RUN npm run build
 
 # Specifies what command to run within the container
 CMD ["npm", "start"]
+```
 
 
+touch .dockerignore
 
-.dockerignore
-
+```
 Dockerfile
 .dockerignore
 node_modules
 npm-debug.log
+```
 
-
+dan bouwen we die om naar een image
+```
 docker build -t work-it:latest .
-// --tag , -t		Name and optionally a tag in the 'name:tag' format
+# --tag , -t		Name and optionally a tag in the 'name:tag' format
+```
 
 docker ps
 docker run -d -p 3000:3000 docker-workshop
