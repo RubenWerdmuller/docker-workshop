@@ -99,13 +99,13 @@ npm-debug.log
 
 Ok. Let's start building our Docker image! It will not be included in your project! Images are however stored on your system.
 
-```
+```zsh
 docker build -t docker-workshop:latest .
 # --tag , -t		Name and optionally a tag in the 'name:tag' format
 # The . to reference the repository of a Dockerfile.
 ```
 
-```
+```zsh
 docker ps
 docker run -d -p 3000:3000 docker-workshop
 # -detached is still running in the background, whether you like it or not;)
@@ -114,21 +114,21 @@ docker logs abc
 docker ps
 ```
 
-```
+```zsh
 docker stop abc
 docker ps -a
 ```
 
 We can also name our container for a better development experience since we can start using that name rather than the randomly generated one. This will also prevent running duplicates.
 
-```
+```zsh
 docker run -d -p 3000:3000 --name=docker-workshop docker-workshop
 ```
 
 
 Fully remove:
 
-```
+```zsh
 docker stop abc && docker rm $_
 
 # bash: `_$`
@@ -145,7 +145,7 @@ Here you can quickly see what containers are running. While it might look useful
 
 - Create an account with [DockerHub](https://hub.docker.com/)
 
-```
+```zsh
 docker images
 docker image rm
 
@@ -154,26 +154,26 @@ docker tag docker-workshop rubenwerdmuller/workshop
 
 That is my username choosen on purpose. Now I can easily send it over to the Docker Hub.
 
-```
+```zsh
 docker login
 docker login -u your_dockerhub_username
 ```
 
 Now push it like it's hot:
 
-```
+```zsh
 docker push rubenwerdmuller/workshop
 ```
 
 Images can take up quite some space. Let's remove all non running containers:
 
-```
+```zsh
 docker system prune -a
 ```
 
 We can pull it from the Hub too:
 
-```
+```zsh
 docker pull rubenwerdmuller/workshop
 ```
 
