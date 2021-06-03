@@ -1,56 +1,64 @@
 # docker-workshop
 
-## Prerequisites
-- Create an account with [DockerHub](https://hub.docker.com/)
+![](https://miro.medium.com/max/672/1*glD7bNJG3SlO0_xNmSGPcQ.png)
+
+Why Docker?
+
+- Development/production parity
+- Different environments for running applications across different operating systems
+- Decoupling infrastructure from application development
+- Debugging capabilities
+
+> But It Works On My Machine!
+
+
 - Open [PWD](https://labs.play-with-docker.com/) Platform on your browser
-- Download Docker Desktop
 
-Run ( en pull als hij niks kan vinden):
+First we'll pull a Docker Image from the Docker Registry. This can be done by using `pull`, but we can also use `docker run` as it will checkout both local files and the Docker Hub:
 
-```
+```zsh
 docker run hello-world
 ```
 
-kiek maar:
-```
+Let's check it out:
+
+```zsh
 docker images
-docker ps # hello world stopt zichzelf weer.. :)
+docker ps # hello world closes in on itself
 docker ps -a
 ```
 
-inspect de image:
-```
-docker inspect <eerste letters IMAGE ID> # of id
+Inspect the image:
+
+```zsh
+docker inspect <first unique characters of the image id>
 ```
 
+```zsh
+docker stop <id>
 ```
-docker stop <eerste letters IMAGE ID> # of id
-```
-
-<!-- // run your image as container: -->
-<!-- docker run -dit hello-world -->
 
 ![](https://miro.medium.com/max/3600/0*CP98BIIBgMG2K3u5.png)
 
-## local Docker
+## Local Docker
 
-Niet verder in PWD omdat het je gegevens bloot legt
+let's steer clear from PWD to start our own project!
 
-dus een nieuw project!
-
-```
+```zsh
 npx create-next-app --use-npm
 docker-workshop
 cd docker-workshop
 ```
 
-We gaan een docker file maken
+In our project, we're going to manage our CI/CD with **Configuration as code** (CaC). With a CaC approach, you'll configure the settings for your servers, code and other resources into a text (YAML) file. This file will be checked in version control, which will be used for creating and updating these configurations.
 
-Dockerfile (In GO language die ze intern bij Google gebruiken)
+Let's start creating our Dockerfile. We'll write this in the GO language which is used internally by Google
 
+```zsh
 touch Dockerfile
-
 ```
+
+```dockerfile
 # This image includes Node.js and npm. Each Dockerfile must begin with a FROM instruction.
 FROM node:16-alpine
 
@@ -60,6 +68,7 @@ ENV NODE_ENV=production
 # Setting working directory. All the path will be relative to WORKDIR
 WORKDIR /app
 
+# Copy both the package.json and package.lock from root to destination WORKDIR
 COPY package*.json ./
 
 # Check https://blog.npmjs.org/post/171556855892/introducing-npm-ci-for-faster-more-reliable why we're using npm ci
@@ -75,27 +84,33 @@ RUN npm run build
 CMD ["npm", "start"]
 ```
 
+Let's add some files we don't want to include in our to be created image
 
+```zsh
 touch .dockerignore
-
 ```
+
+```text
 Dockerfile
 .dockerignore
 node_modules
 npm-debug.log
 ```
 
-dan bouwen we die om naar een image
+Ok. Let's start building our Docker image! It will not be included in your project! Images are however stored on your system.
+
 ```
-docker build -t work-it:latest .
+docker build -t docker-workshop:latest .
 # --tag , -t		Name and optionally a tag in the 'name:tag' format
+# The . to reference the repository of a Dockerfile.
 ```
 
 ```
 docker ps
 docker run -d -p 3000:3000 docker-workshop
-# detached is still running, whether you like it or not;)
-docker logs 4e9
+# -detached is still running in the background, whether you like it or not;)
+# -p map port 3000 to 3000. Without this, our container will be sealed!
+docker logs abc
 docker ps
 ```
 
@@ -104,22 +119,31 @@ docker stop abc
 docker ps -a
 ```
 
-full remove:
+We can also name our container for a better development experience since we can start using that name rather than the randomly generated one. This will also prevent running duplicates.
 
 ```
-full remove:
+docker run -d -p 3000:3000 --name=docker-workshop docker-workshop
+```
+
+
+Fully remove:
+
+```
 docker stop abc && docker rm $_
 
 # bash: `_$`
 # Outputs the last field from the last command executed, useful to get something to pass onwards to another command
 ```
 
-## open Docker Desktop
+### Open Docker Desktop
 
-voila!
+- Download [Docker Desktop](https://www.docker.com/products/docker-desktop)
 
+Here you can quickly see what containers are running. While it might look useful, working from the terminal gives us everything we need, while Docker Desktop only gives us so much.
 
-## Docker Push
+## Docker Hub
+
+- Create an account with [DockerHub](https://hub.docker.com/)
 
 ```
 docker images
@@ -128,32 +152,26 @@ docker image rm
 docker tag docker-workshop rubenwerdmuller/workshop
 ```
 
-Dat is mijn username, maar ook mijn toegang
+That is my username choosen on purpose. Now I can easily send it over to the Docker Hub.
 
 ```
 docker login
 docker login -u your_dockerhub_username
 ```
 
-Als het mis gaat kun je even uitloggen natuurlijk
-
-```
-docker logout
-```
-
-en push!
+Now push it like it's hot:
 
 ```
 docker push rubenwerdmuller/workshop
 ```
 
-Alles leeg halen, want onze apps zijn groot!
+Images can take up quite some space. Let's remove all non running containers:
 
 ```
 docker system prune -a
 ```
 
-nog een keer dan:
+We can pull it from the Hub too:
 
 ```
 docker pull rubenwerdmuller/workshop
@@ -165,7 +183,7 @@ docker pull rubenwerdmuller/workshop
 
 ```
 npx express-generator --no-view api
-# maakt een mapje /api met een Express starter 
+# maakt een mapje /api met een Express starter
 ```
 
 ```
