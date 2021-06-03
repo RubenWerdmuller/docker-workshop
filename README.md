@@ -1,34 +1,198 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# docker-workshop
 
-## Getting Started
+![](https://miro.medium.com/max/672/1*glD7bNJG3SlO0_xNmSGPcQ.png)
 
-First, run the development server:
+Why Docker?
 
-```bash
-npm run dev
-# or
-yarn dev
+- Development/production parity
+- Different environments for running applications across different operating systems
+- Decoupling infrastructure from application development
+- Debugging capabilities
+
+> But It Works On My Machine!
+
+
+- Open [PWD](https://labs.play-with-docker.com/) Platform on your browser
+
+First we'll pull a Docker Image from the Docker Registry. This can be done by using `pull`, but we can also use `docker run` as it will checkout both local files and the Docker Hub:
+
+```zsh
+docker run hello-world
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Let's check it out:
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+```zsh
+docker images
+docker ps # hello world closes in on itself
+docker ps -a
+```
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+Inspect the image:
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+```zsh
+docker inspect <first unique characters of the image id>
+```
 
-## Learn More
+```zsh
+docker stop <id>
+```
 
-To learn more about Next.js, take a look at the following resources:
+![](https://miro.medium.com/max/3600/0*CP98BIIBgMG2K3u5.png)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Local Docker
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+let's steer clear from PWD to start our own project!
 
-## Deploy on Vercel
+```zsh
+npx create-next-app --use-npm
+docker-workshop
+cd docker-workshop
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+In our project, we're going to manage our CI/CD with **Configuration as code** (CaC). With a CaC approach, you'll configure the settings for your servers, code and other resources into a text (YAML) file. This file will be checked in version control, which will be used for creating and updating these configurations.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Let's start creating our Dockerfile. We'll write this in the GO language which is used internally by Google
+
+```zsh
+touch Dockerfile
+```
+
+```dockerfile
+# This image includes Node.js and npm. Each Dockerfile must begin with a FROM instruction.
+FROM node:16-alpine
+
+# ENV is for future running containers. ARG for building your Docker image.
+ENV NODE_ENV=production
+
+# Setting working directory. All the path will be relative to WORKDIR
+WORKDIR /app
+
+# Copy both the package.json and package.lock from root to destination WORKDIR
+COPY package*.json ./
+
+# Check https://blog.npmjs.org/post/171556855892/introducing-npm-ci-for-faster-more-reliable why we're using npm ci
+RUN npm ci --only=production
+
+# Copy all source files from root to destination WORKDIR
+COPY . .
+
+# Build app
+RUN npm run build
+
+# Specifies what command to run within the container
+CMD ["npm", "start"]
+```
+
+Let's add some files we don't want to include in our to be created image
+
+```zsh
+touch .dockerignore
+```
+
+```text
+Dockerfile
+.dockerignore
+node_modules
+npm-debug.log
+```
+
+Ok. Let's start building our Docker image! It will not be included in your project! Images are however stored on your system.
+
+```
+docker build -t docker-workshop:latest .
+# --tag , -t		Name and optionally a tag in the 'name:tag' format
+# The . to reference the repository of a Dockerfile.
+```
+
+```
+docker ps
+docker run -d -p 3000:3000 docker-workshop
+# -detached is still running in the background, whether you like it or not;)
+# -p map port 3000 to 3000. Without this, our container will be sealed!
+docker logs abc
+docker ps
+```
+
+```
+docker stop abc
+docker ps -a
+```
+
+We can also name our container for a better development experience since we can start using that name rather than the randomly generated one. This will also prevent running duplicates.
+
+```
+docker run -d -p 3000:3000 --name=docker-workshop docker-workshop
+```
+
+
+Fully remove:
+
+```
+docker stop abc && docker rm $_
+
+# bash: `_$`
+# Outputs the last field from the last command executed, useful to get something to pass onwards to another command
+```
+
+### Open Docker Desktop
+
+- Download [Docker Desktop](https://www.docker.com/products/docker-desktop)
+
+Here you can quickly see what containers are running. While it might look useful, working from the terminal gives us everything we need, while Docker Desktop only gives us so much.
+
+## Docker Hub
+
+- Create an account with [DockerHub](https://hub.docker.com/)
+
+```
+docker images
+docker image rm
+
+docker tag docker-workshop rubenwerdmuller/workshop
+```
+
+That is my username choosen on purpose. Now I can easily send it over to the Docker Hub.
+
+```
+docker login
+docker login -u your_dockerhub_username
+```
+
+Now push it like it's hot:
+
+```
+docker push rubenwerdmuller/workshop
+```
+
+Images can take up quite some space. Let's remove all non running containers:
+
+```
+docker system prune -a
+```
+
+We can pull it from the Hub too:
+
+```
+docker pull rubenwerdmuller/workshop
+```
+
+
+
+<!-- ## Express API Generator
+
+```
+npx express-generator --no-view api
+# maakt een mapje /api met een Express starter
+```
+
+```
+var port = normalizePort(process.env.PORT || '3001');
+# aanpassen port in bin/wwww
+```
+
+```
+cd api
+npm i
+open http://localhost:3001/
+``` -->
