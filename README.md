@@ -161,7 +161,7 @@ docker pull rubenwerdmuller/workshop
 
 
 
-## Express API Generator
+<!-- ## Express API Generator
 
 ```
 npx express-generator --no-view api
@@ -177,4 +177,4 @@ var port = normalizePort(process.env.PORT || '3001');
 cd api
 npm i
 open http://localhost:3001/
-```
+``` -->
