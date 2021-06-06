@@ -47,7 +47,7 @@ let's steer clear from PWD to start our own project!
 
 - Download [Docker Desktop](https://www.docker.com/products/docker-desktop)
 
-Docker Desktop gives us the Docker CLI and the opportunity to visually display what containers are running. This might be useful from time to time, but working from the terminal gives us everything we need, while Docker Desktop only gives us so much.
+Docker Desktop gives us the Docker CLI and the opportunity to visually display what containers are running. This might be useful from time to time, but working from the terminal gives us everything we need. Docker Desktop only gives us so much.
 
 ### Docker Hub
 
