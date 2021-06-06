@@ -11,7 +11,6 @@ Why Docker?
 
 > But It Works On My Machine!
 
-
 - Open [PWD](https://labs.play-with-docker.com/) Platform on your browser
 
 First we'll pull a Docker Image from the Docker Registry. This can be done by using `pull`, but we can also use `docker run` as it will checkout both local files and the Docker Hub:
@@ -40,9 +39,23 @@ docker stop <id>
 
 ![](https://miro.medium.com/max/3600/0*CP98BIIBgMG2K3u5.png)
 
-## Local Docker
+## Dockerizing our own project
 
 let's steer clear from PWD to start our own project!
+
+### Open Docker Desktop
+
+- Download [Docker Desktop](https://www.docker.com/products/docker-desktop)
+
+Docker Desktop gives us the Docker CLI and the opportunity to visually display what containers are running. This might be useful from time to time, but working from the terminal gives us everything we need, while Docker Desktop only gives us so much.
+
+### Docker Hub
+
+Before we can use the CLI, we will need to create an account with [DockerHub](https://hub.docker.com/)
+
+### Dockering a Next.js project
+
+Let's spin up a new Next.js project:
 
 ```zsh
 npx create-next-app --use-npm
@@ -59,16 +72,16 @@ touch Dockerfile
 ```
 
 ```dockerfile
-# This image includes Node.js and npm. Each Dockerfile must begin with a FROM instruction.
+# Use a compact Linux distribution called Alpine with node installed in our image. Each Dockerfile must begin with a FROM instruction.
 FROM node:16-alpine
 
-# ENV is for future running containers. ARG for building your Docker image.
+# Environment variables: ENV is for future running containers. Use ARG for variables needed during the build of your Docker image.
 ENV NODE_ENV=production
 
-# Setting working directory. All the path will be relative to WORKDIR
+# Setting a working directory for the image. All the image paths will be relative to WORKDIR
 WORKDIR /app
 
-# Copy both the package.json and package.lock from root to destination WORKDIR
+# Copy both the package.json and package.lock from our project root to destination WORKDIR
 COPY package*.json ./
 
 # Check https://blog.npmjs.org/post/171556855892/introducing-npm-ci-for-faster-more-reliable why we're using npm ci
@@ -84,6 +97,10 @@ RUN npm run build
 CMD ["npm", "start"]
 ```
 
+> A note about why we're not simply copying over our node_modules: The core of this issue for Node.js is that node_modules can contain binaries compiled for your host OS, and if it’s different then the container OS, you’ll get errors trying to run your app when you’re bind-mounting it from the host for development.
+
+> Another note about why we copy our package.json and package-lock.json before we copy our code into the container: Docker will cache installed node_modules as a separate layer, then, if you change your app code and execute the build command, the node_modules will not be installed again if you did not change package.json.
+
 Let's add some files we don't want to include in our to be created image
 
 ```zsh
@@ -94,7 +111,6 @@ touch .dockerignore
 Dockerfile
 .dockerignore
 node_modules
-npm-debug.log
 ```
 
 Ok. Let's start building our Docker image! It will not be included in your project! Images are however stored on your system.
@@ -125,7 +141,6 @@ We can also name our container for a better development experience since we can 
 docker run -d -p 3000:3000 --name=docker-workshop docker-workshop
 ```
 
-
 Fully remove:
 
 ```zsh
@@ -135,15 +150,7 @@ docker stop abc && docker rm $_
 # Outputs the last field from the last command executed, useful to get something to pass onwards to another command
 ```
 
-### Open Docker Desktop
-
-- Download [Docker Desktop](https://www.docker.com/products/docker-desktop)
-
-Here you can quickly see what containers are running. While it might look useful, working from the terminal gives us everything we need, while Docker Desktop only gives us so much.
-
-## Docker Hub
-
-- Create an account with [DockerHub](https://hub.docker.com/)
+.............
 
 ```zsh
 docker images
@@ -152,7 +159,7 @@ docker image rm
 docker tag docker-workshop rubenwerdmuller/workshop
 ```
 
-That is my username choosen on purpose. Now I can easily send it over to the Docker Hub.
+That is my username choosen on purpose. Now Docker Hub will recoginise the account and will publish it for me.
 
 ```zsh
 docker login
@@ -177,7 +184,7 @@ We can pull it from the Hub too:
 docker pull rubenwerdmuller/workshop
 ```
 
-
+Cheers!
 
 <!-- ## Express API Generator
 
