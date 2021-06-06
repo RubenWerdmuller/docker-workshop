@@ -141,25 +141,27 @@ We can also name our container for a better development experience since we can 
 docker run -d -p 3000:3000 --name=docker-workshop docker-workshop
 ```
 
-Fully remove:
+How do we remove and stop our image and container?
 
 ```zsh
+docker images
+docker images ls
+docker ps
+docker images -a
+
 docker stop abc && docker rm $_
 
 # bash: `_$`
 # Outputs the last field from the last command executed, useful to get something to pass onwards to another command
 ```
 
-.............
+We can also tag our image:
 
 ```zsh
-docker images
-docker image rm
-
 docker tag docker-workshop rubenwerdmuller/workshop
 ```
 
-That is my username choosen on purpose. Now Docker Hub will recoginise the account and will publish it for me.
+The image is tagged with my username on purpose. This makes it easy for Docker Hub to recoginise the account and it will instantly publish it. I do need to be logged in though:
 
 ```zsh
 docker login
