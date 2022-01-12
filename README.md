@@ -9,7 +9,9 @@ Why Docker?
 - Decoupling infrastructure from application development
 - Debugging capabilities
 
-> But It Works On My Machine!
+> Begone witht the "But It Works On My Machine!"
+
+## Let's play
 
 - Open [PWD](https://labs.play-with-docker.com/) Platform on your browser
 
@@ -47,7 +49,7 @@ let's steer clear from PWD to start our own project!
 
 - Download [Docker Desktop](https://www.docker.com/products/docker-desktop)
 
-Docker Desktop gives us the Docker CLI and the opportunity to visually display what containers are running. This might be useful from time to time, but working from the terminal gives us everything we need. Docker Desktop only gives us so much.
+Docker Desktop installs a few things under which the Docker Command Line Interface (CLI). The Desktop version has some useful features, but we'll mostly be using the CLI. 
 
 ### Docker Hub
 
@@ -58,14 +60,14 @@ Before we can use the CLI, we will need to create an account with [DockerHub](ht
 Let's spin up a new Next.js project:
 
 ```zsh
-npx create-next-app --use-npm
+npx create-next-app@latest
 docker-workshop
 cd docker-workshop
 ```
 
 In our project, we're going to manage our CI/CD with **Configuration as code** (CaC). With a CaC approach, you'll configure the settings for your servers, code and other resources into a text (YAML) file. This file will be checked in version control, which will be used for creating and updating these configurations.
 
-Let's start creating our Dockerfile. We'll write this in the GO language which is used internally by Google
+Let's start by creating our Dockerfile. Docker was writtin in GO, but a Dockerfile is actually a simple textfile.
 
 ```zsh
 touch Dockerfile
@@ -78,7 +80,7 @@ FROM node:16-alpine
 # Environment variables: ENV is for future running containers. Use ARG for variables needed during the build of your Docker image.
 ENV NODE_ENV=production
 
-# Setting a working directory for the image. All the image paths will be relative to WORKDIR
+# Setting a working directory for the image. All **image** paths will be relative to WORKDIR
 WORKDIR /app
 
 # Copy both the package.json and package.lock from our project root to destination WORKDIR
@@ -93,6 +95,9 @@ COPY . .
 # Build app
 RUN npm run build
 
+# Tell everybody what port we will use. This doesn not actually expose the port!
+EXPOSE 3000
+
 # Specifies what command to run within the container
 CMD ["npm", "start"]
 ```
@@ -101,7 +106,7 @@ CMD ["npm", "start"]
 
 > Another note about why we copy our package.json and package-lock.json before we copy our code into the container: Docker will cache installed node_modules as a separate layer, then, if you change your app code and execute the build command, the node_modules will not be installed again if you did not change package.json.
 
-Let's add some files we don't want to include in our to be created image
+Let's add some files to our project we don't want to include in our Docker image
 
 ```zsh
 touch .dockerignore
@@ -113,7 +118,9 @@ Dockerfile
 node_modules
 ```
 
-Ok. Let's start building our Docker image! It will not be included in your project! Images are however stored on your system.
+All right, we've created the recipe for our cake. Now we're going to actually put the cake together and put it in the oven 🍰
+
+The Docker Image will not be included in your project as a file. Instead, these are stored on your system.
 
 ```zsh
 docker build -t docker-workshop:latest .
@@ -121,27 +128,35 @@ docker build -t docker-workshop:latest .
 # The . to reference the repository of a Dockerfile.
 ```
 
+Let's run our image 🏃‍♀️
+
 ```zsh
-docker ps
 docker run -d -p 3000:3000 docker-workshop
 # -detached is still running in the background, whether you like it or not;)
 # -p map port 3000 to 3000. Without this, our container will be sealed!
+```
+
+Are you running? 💦
+
+```zsh
 docker logs abc
 docker ps
 ```
+
+Ok, good workout! 🤾‍♂️
 
 ```zsh
 docker stop abc
 docker ps -a
 ```
 
-We can also name our container for a better development experience since we can start using that name rather than the randomly generated one. This will also prevent running duplicates.
+We can also name our tagged container for a better development experience since we can start using that name rather than the randomly generated one. This will also prevent running duplicates.
 
 ```zsh
 docker run -d -p 3000:3000 --name=docker-workshop docker-workshop
 ```
 
-How do we remove and stop our image and container?
+We had some fun. Now let's kill it 🔪🩸
 
 ```zsh
 docker images
@@ -151,11 +166,16 @@ docker images -a
 
 docker stop abc && docker rm $_
 
-# bash: `_$`
-# Outputs the last field from the last command executed, useful to get something to pass onwards to another command
+# _$ outputs the last field from the last command executed, useful to get something to pass onwards to another command
 ```
 
-We can also tag our image:
+### Registries
+
+So, usually you want your image to be hosted somewhere. This way something like hosting can access it. Docker has its own registry, but Git providers often have their own too. For example: GitHub, GitLab and Azure all have their own container registry.
+
+Create the image like we did before 👷
+
+Now, let's **retag** our image so we can push it to the Docker Hub registry.
 
 ```zsh
 docker tag docker-workshop rubenwerdmuller/workshop
@@ -174,19 +194,21 @@ Now push it like it's hot:
 docker push rubenwerdmuller/workshop
 ```
 
-Images can take up quite some space. Let's remove all non running containers:
+Docker images can take up quite some space on systems. Let's destroy all non running containers 🪚🔨
 
 ```zsh
 docker system prune -a
 ```
 
-We can pull it from the Hub too:
+Since we uploaded our image, we can also pull it! 
 
 ```zsh
 docker pull rubenwerdmuller/workshop
 ```
 
-Cheers!
+### Cheers!
+
+![](https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Heart_coraz%C3%B3n.svg/1200px-Heart_coraz%C3%B3n.svg.png)
 
 <!-- ## Express API Generator
 
