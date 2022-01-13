@@ -1,0 +1,32 @@
+on:
+  push:
+    branches:
+      - '*/*'       # matches every branch containing a single '/'
+      - '**'        # matches every branch
+      - '!master'   # excludes master
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build, push, and deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Log in to container registry
+        run: docker login ghcr.io -p ${{ secrets.GITHUB_TOKEN }} -u $GITHUB_ACTOR
+
+      - name: Pull latest version of image
+        run: docker pull ghcr.io/RubenWerdmuller/docker-workshop/workshop-image:latest || true
+
+      - name: Build container image
+        run: docker build -t workshop-image:latest .
+
+      - name: Tag image
+        run: |
+          docker tag workshop-image ghcr.io/RubenWerdmuller/docker-workshop/workshop-image:latest
+          
+      - name: Push image to Container Registry
+        run: |
+          docker push ghcr.io/RubenWermduller/docker-workshop/workshop-image:latest
