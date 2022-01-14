@@ -25,8 +25,8 @@ jobs:
 
       - name: Tag image
         run: |
-          docker tag workshop-image ghcr.io/rubenwerdmuller/docker-workshop/workshop-image:latest
+          docker tag workshop-image:latest ghcr.io/rubenwerdmuller/docker-workshop/workshop-image:latest
           
       - name: Push image to Container Registry
         run: |
-          docker push ghcr.io/rubenwermduller/docker-workshop/workshop-image:latest
+          docker push ghcr.io/rubenwerdmuller/docker-workshop/workshop-image:latest
