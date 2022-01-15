@@ -206,6 +206,55 @@ Since we uploaded our image, we can also pull it!
 docker pull rubenwerdmuller/workshop
 ```
 
+### Automating our flow in GitHub Actions
+
+Finally, let's automate our flow!
+
+Let's create a project which we can automate:
+
+```zsh
+
+```
+
+First, we'll want to add our GitHub token (add as `GITHUB_TOKEN`) as a secret to [GitHub secrets](https://docs.github.com/en/actions/security-guides/encrypted-secrets). This will be used to login to our Docker Registry. 
+
+Then create a file called `.github/workflows/docker-hub.prod.yml`
+
+```zsh
+name: Push Docker image to Docker Hub
+
+on:
+  push:
+    branches:
+      - ** # Will fire on every possible branch
+      # - */* # Will fire on every branch that has a single slash in it
+      # */** # Will fire on every branch that has a slash in it
+      # - main # Will fire on the branch named `main`
+      # - !main # Will not fire if the branch name is `main`
+      
+jobs:
+  test:
+    runs-on: ubuntu-latest #GitHub virtual machine uses the latest version of Ubuntu
+    steps:
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Build and push
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          # Update the latest image and create a back-up
+          tags: |
+            ghcr.io/${{ github.repository }}:${{ github.ref }}
+            ghcr.io/${{ github.repository }}:latest
+```
+
+
 ### Cheers!
 
 ![](https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Heart_coraz%C3%B3n.svg/1200px-Heart_coraz%C3%B3n.svg.png)
