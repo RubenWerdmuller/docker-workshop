@@ -220,7 +220,7 @@ First, we'll want to add our GitHub token (add as `GITHUB_TOKEN`) as a secret to
 
 Then create a file called `.github/workflows/docker-hub.prod.yml`
 
-```zsh
+```yaml
 name: Push Docker image to Docker Hub
 
 on:
