@@ -226,11 +226,11 @@ name: Push Docker image to Docker Hub
 on:
   push:
     branches:
-      - ** # Will fire on every possible branch
-      # - */* # Will fire on every branch that has a single slash in it
-      # */** # Will fire on every branch that has a slash in it
-      # - main # Will fire on the branch named `main`
-      # - !main # Will not fire if the branch name is `main`
+      - '**' # Will fire on every possible branch
+      # - '*/*' # Will fire on every branch that has a single slash in it
+      # - '*/**' # Will fire on every branch that has a slash in it
+      # - 'main' # Will fire on the branch named `main`
+      # - '!main' # Will not fire if the branch name is `main`
       
 jobs:
   test:
