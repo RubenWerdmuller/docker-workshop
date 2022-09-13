@@ -258,13 +258,15 @@ Say we'd want to add some possible variants to our recipe (Docker image). They'r
 
 **Using the Docker build**
 
-During the build we can add environment variables. This requires 3 steps.
+During the build we can add environment variables. This requires 2 additions to our regular flow:
 
 1. Adding the variable as a docker CLI flag
 
 ```sh
 docker build --build-arg NODE_ENV=production --no-cache -t our_app_name .
 ```
+
+2. Passing the variable using the Dockerfile
 
 ```dockerfile
 # Add a default build argument above all else
@@ -290,9 +292,27 @@ So in short:
 # Environment variables: ENV is for future running containers. Use ARG for variables needed during the build of your Docker image.
 ```
 
-**When using `next.js`**
+**When using `ci/cd` and `next.js`**
 
-docker build --build-arg RUNNING_ENV=production --no-cache -t degodook-selfservice .
+You can also add public information through your `ci/cd` flow which has the benefit that the flow act as a single source of truth.
+
+In the next example, after the `script:` line, a `shell` script is used to pass an environment variable to a newly created `.env.production` fle.
+
+```sh
+Build and push develop:
+  extends: .build
+  variables:
+    ORY_SDK_URL: https://acc.id.commondatafactory.nl
+  script:
+    - echo "ORY_SDK_URL=$ORY_SDK_URL" > .env.production
+    - docker pull --quiet $CI_REGISTRY_IMAGE:develop || true
+    - docker build --build-arg RUNNING_ENV=staging -t $IMAGE_TAG -t $CI_REGISTRY_IMAGE:develop .
+    - docker push --quiet $CI_REGISTRY_IMAGE:develop
+  only:
+    - branches
+  except:
+    - master
+```
 
 
 ### Cheers!
