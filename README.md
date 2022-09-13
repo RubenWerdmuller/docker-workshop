@@ -77,9 +77,6 @@ touch Dockerfile
 # Use a compact Linux distribution called Alpine with node installed in our image. Each Dockerfile must begin with a FROM instruction.
 FROM node:16-alpine
 
-# Environment variables: ENV is for future running containers. Use ARG for variables needed during the build of your Docker image.
-ENV NODE_ENV=production
-
 # Setting a working directory for the image. All **image** paths will be relative to WORKDIR
 WORKDIR /app
 
@@ -253,6 +250,49 @@ jobs:
             ghcr.io/${{ github.repository }}:${{ github.ref }}
             ghcr.io/${{ github.repository }}:latest
 ```
+
+
+### Environment variables
+
+Say we'd want to add some possible variants to our recipe (Docker image). They're not secret ingredients, so we can input these freely.
+
+**Using the Docker build**
+
+During the build we can add environment variables. This requires 3 steps.
+
+1. Adding the variable as a docker CLI flag
+
+```sh
+docker build --build-arg NODE_ENV=production --no-cache -t our_app_name .
+```
+
+```dockerfile
+# Add a default build argument above all else
+ARG NODE_ENV=development
+
+FROM node:16-alpine
+
+# Set the environment variable by assigning the argument we pass through the CLI
+ENV NODE_ENV=$NODE_ENV
+
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --only=production
+COPY . .
+RUN npm run build
+EXPOSE 3000
+CMD ["npm", "start"]
+```
+
+So in short:
+
+```sh
+# Environment variables: ENV is for future running containers. Use ARG for variables needed during the build of your Docker image.
+```
+
+**When using `next.js`**
+
+docker build --build-arg RUNNING_ENV=production --no-cache -t degodook-selfservice .
 
 
 ### Cheers!
