@@ -92,14 +92,14 @@ COPY . .
 # Build app
 RUN npm run build
 
-# Tell everybody what port we will use. This doesn not actually expose the port!
+# Tell everybody what port we will use. Note - this does not actually expose the port and is meant as indication. We will set the port when running the docker container.
 EXPOSE 3000
 
 # Specifies what command to run within the container
 CMD ["npm", "start"]
 ```
 
-> A note about why we're not simply copying over our node_modules: The core of this issue for Node.js is that node_modules can contain binaries compiled for your host OS, and if it’s different then the container OS, you’ll get errors trying to run your app when you’re bind-mounting it from the host for development.
+> A note about why we're not simply copying over our `node_modules`: The core of this issue for Node.js is that node_modules can contain binaries compiled for your host OS, and if it’s different then the container OS, you’ll get errors trying to run your app when you’re bind-mounting it from the host for development.
 
 > Another note about why we copy our package.json and package-lock.json before we copy our code into the container: Docker will cache installed node_modules as a separate layer, then, if you change your app code and execute the build command, the node_modules will not be installed again if you did not change package.json.
 
@@ -117,7 +117,7 @@ node_modules
 
 All right, we've created the recipe for our cake. Now we're going to actually put the cake together and put it in the oven 🍰
 
-The Docker Image will not be included in your project as a file. Instead, these are stored on your system.
+> The Docker Image will not be included in your project as a file. Instead, these are stored on your OS.
 
 ```zsh
 docker build -t docker-workshop:latest .
@@ -153,7 +153,7 @@ We can also name our tagged container for a better development experience since 
 docker run -d -p 3000:3000 --name=docker-workshop docker-workshop
 ```
 
-We had some fun. Now let's kill it 🔪🩸
+Alright, We've had our fun. Now let's kill it 🔪🩸
 
 ```zsh
 docker images
@@ -165,6 +165,7 @@ docker stop abc && docker rm $_
 
 # _$ outputs the last field from the last command executed, useful to get something to pass onwards to another command
 ```
+
 
 ### Registries
 
@@ -202,6 +203,7 @@ Since we uploaded our image, we can also pull it!
 ```zsh
 docker pull rubenwerdmuller/workshop
 ```
+
 
 ### Automating our flow in GitHub Actions
 
@@ -258,38 +260,10 @@ Say we'd want to add some possible variants to our recipe (Docker image). They'r
 
 **Using the Docker build**
 
-During the build we can add environment variables. This requires 2 additions to our regular flow:
-
-1. Adding the variable as a docker CLI flag
+During the build we can add environment variables. This requires one simple addition to our regular flow. Add the variable as a docker CLI flag:
 
 ```sh
-docker build --build-arg NODE_ENV=production --no-cache -t our_app_name .
-```
-
-2. Passing the variable using the Dockerfile
-
-```dockerfile
-# Add a default build argument above all else
-ARG NODE_ENV=development
-
-FROM node:16-alpine
-
-# Set the environment variable by assigning the argument we pass through the CLI
-ENV NODE_ENV=$NODE_ENV
-
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci --only=production
-COPY . .
-RUN npm run build
-EXPOSE 3000
-CMD ["npm", "start"]
-```
-
-So in short:
-
-```sh
-# Environment variables: ENV is for future running containers. Use ARG for variables needed during the build of your Docker image.
+docker build --build-arg APP_ENVIRONMENT=preview --no-cache -t our_app_name .
 ```
 
 **When using `ci/cd` and `next.js`**
@@ -311,7 +285,7 @@ Build and push develop:
   only:
     - branches
   except:
-    - master
+    - main
 ```
 
 
