@@ -217,7 +217,7 @@ Let's create a project which we can automate:
 
 First, we'll want to add our GitHub token (add as `GITHUB_TOKEN`) as a secret to [GitHub secrets](https://docs.github.com/en/actions/security-guides/encrypted-secrets). This will be used to login to our Docker Registry. 
 
-Then create a file called `.github/workflows/docker-hub.prod.yml`
+Then create a file called `.github/workflows/deploy.prod.yml`
 
 ```yaml
 name: Push Docker image to Docker Hub
@@ -236,7 +236,7 @@ jobs:
     runs-on: ubuntu-latest #GitHub virtual machine uses the latest version of Ubuntu
     steps:
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@v1
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -253,6 +253,7 @@ jobs:
             ghcr.io/${{ github.repository }}:latest
 ```
 
+> more information about logging in with Docker [here](https://github.com/marketplace/actions/docker-login).
 
 ### Environment variables
 
