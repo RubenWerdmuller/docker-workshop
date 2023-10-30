@@ -9,7 +9,7 @@ Why Docker?
 - Decoupling infrastructure from application development
 - Debugging capabilities
 
-> Begone witht the "But It Works On My Machine!"
+> Pro-tip: watch [this video](https://www.youtube.com/watch?v=Gjnup-PuquQ) for a quick introduction
 
 ## Let's play
 
