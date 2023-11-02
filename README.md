@@ -65,7 +65,7 @@ docker-workshop
 cd docker-workshop
 ```
 
-In our project, we're going to manage our CI/CD with **Configuration as code** (CaC). With a CaC approach, you'll configure the settings for your servers, code and other resources into a text (YAML) file. This file will be checked in version control, which will be used for creating and updating these configurations.
+In our project, we're going to manage our CI/CD with **Configuration as Code** (CaC). With a CaC approach, you'll configure the settings for your servers, code and other resources into a text (YAML) file. This file will be checked in version control, which will be used for creating and updating these configurations.
 
 Let's start by creating our Dockerfile. Docker was writtin in GO, but a Dockerfile is actually a simple textfile.
 
