@@ -75,7 +75,7 @@ touch Dockerfile
 
 ```dockerfile
 # Use a compact Linux distribution called Alpine with node installed in our image. Each Dockerfile must begin with a FROM instruction.
-FROM node:16-alpine
+FROM node:21-alpine
 
 # Setting a working directory for the image. All **image** paths will be relative to WORKDIR
 WORKDIR /app
